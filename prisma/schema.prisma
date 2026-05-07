@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ComponentType {
+  cpu
+  gpu
+  ram
+  ssd
+  motherboard
+  psu
+  case
+  cooler
+}
