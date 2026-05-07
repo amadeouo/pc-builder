@@ -1,0 +1,29 @@
+model Build {
+  id         String @id @default(cuid())
+  name       String
+  totalPrice Int    @default(0)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  components BuildComponent[]
+
+  isPublic Boolean @default(false)
+
+  likes Like[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BuildComponent {
+  id String @id @default(cuid())
+
+  buildId String
+  build   Build  @relation(fields: [build], references: [id])
+
+  componentId String
+  component   Component @relation(fields: [componentId], references: [id])
+
+  @@unique([buildId, componentId])
+}
