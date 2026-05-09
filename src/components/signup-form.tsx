@@ -19,18 +19,28 @@ import Link from "next/link";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignupSchema, SignupSchemaType } from "@/model/zod/auth";
+import { signup } from "@/app/signup/actions";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const {
     handleSubmit,
     control,
+    setError,
+    reset
   } = useForm({
     reValidateMode: "onBlur",
     resolver: zodResolver(SignupSchema),
   })
 
   const onSubmit: SubmitHandler<SignupSchemaType> = (data) => {
-
+    signup(data)
+      .catch(e => {
+        setError("email", {
+          type: "manual",
+          message: e.message
+        })
+        reset()
+      })
   }
 
   return (
