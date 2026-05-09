@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/shadcn-ui/button"
 import {
   Card,
@@ -8,63 +10,134 @@ import {
 } from "@/components/shadcn-ui/card"
 import {
   Field,
-  FieldDescription,
+  FieldDescription, FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/shadcn-ui/field"
 import { Input } from "@/components/shadcn-ui/input"
+import Link from "next/link";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignupSchema, SignupSchemaType } from "@/model/zod/auth";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
+  const {
+    handleSubmit,
+    control,
+  } = useForm({
+    reValidateMode: "onBlur",
+    resolver: zodResolver(SignupSchema),
+  })
+
+  const onSubmit: SubmitHandler<SignupSchemaType> = (data) => {
+
+  }
+
   return (
     <Card {...props}>
       <CardHeader>
-        <CardTitle>Create an account</CardTitle>
+        <CardTitle>Создайте аккаунт</CardTitle>
         <CardDescription>
-          Enter your information below to create your account
+          Введите информацию для регистрации
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="name">Full Name</FieldLabel>
-              <Input id="name" type="text" placeholder="John Doe" required />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-              <FieldDescription>
-                We&apos;ll use this to contact you. We will not share your email
-                with anyone else.
-              </FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input id="password" type="password" required />
-              <FieldDescription>
-                Must be at least 8 characters long.
-              </FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="confirm-password">
-                Confirm Password
-              </FieldLabel>
-              <Input id="confirm-password" type="password" required />
-              <FieldDescription>Please confirm your password.</FieldDescription>
-            </Field>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field, fieldState: { error, invalid }}) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>Полное имя</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    aria-invalid={invalid}
+                    type="text"
+                    placeholder="Михаил"
+                  />
+                  {error && (
+                    <FieldError errors={[error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="email"
+              control={control}
+              render={({ field, fieldState: { error, invalid }}) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="email"
+                    placeholder="m@example.com"
+                    autoComplete="off"
+                    aria-invalid={invalid}
+                  />
+                  { error ? (
+                    <FieldError errors={[error]} />
+                  ) : (
+                    <FieldDescription>
+                      Мы используем эту информацию для входа, не передаем вашу почту кому-либо другому
+                    </FieldDescription>
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="password"
+              control={control}
+              render={({ field, fieldState: { error, invalid }}) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>Пароль</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="password"
+                    autoComplete="off"
+                    aria-invalid={invalid}
+                  />
+                  {error ? (
+                    <FieldError errors={[error]} />
+                  ) : (
+                    <FieldDescription>Пароль должен содержать 8 символов ли больше</FieldDescription>
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="repeatPassword"
+              control={control}
+              render={({ field, fieldState: { error, invalid }}) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>
+                    Подтвердите пароль
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="password"
+                    aria-invalid={invalid}
+                  />
+                  {error ? (
+                    <FieldError errors={[error]} />
+                  ) : (
+                    <FieldDescription>Пожалуйста подтвердите введенный ранее пароль</FieldDescription>
+                  )}
+                </Field>
+              )}
+            />
             <FieldGroup>
               <Field>
-                <Button type="submit">Create Account</Button>
-                <Button variant="outline" type="button">
-                  Sign up with Google
-                </Button>
+                <Button type="submit">Создать аккаунт</Button>
                 <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="#">Sign in</a>
+                  Уже есть аккаунт? <Link href="/login">Войти</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
