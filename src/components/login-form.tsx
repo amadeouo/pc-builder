@@ -11,7 +11,7 @@ import {
 } from "@/components/shadcn-ui/card"
 import {
   Field,
-  FieldDescription,
+  FieldDescription, FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/shadcn-ui/field"
@@ -20,6 +20,7 @@ import Link from "next/link";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema, LoginSchemaType } from "@/model/zod/auth";
+import { login } from "@/app/login/actions";
 
 export function LoginForm({
   className,
@@ -28,13 +29,21 @@ export function LoginForm({
   const {
     handleSubmit,
     control,
+    setError,
+    formState: { errors }
   } = useForm({
     reValidateMode: "onBlur",
     resolver: zodResolver(LoginSchema),
   })
 
   const onSubmit: SubmitHandler<LoginSchemaType> = (data) => {
-    console.log(data.email, data.password)
+    login(data)
+      .catch(e => {
+        setError("root.serverError", {
+          type: "manual",
+          message: e.message
+        })
+      })
   }
 
   return (
@@ -95,6 +104,10 @@ export function LoginForm({
                   </Field>
                 )}
               />
+
+              { errors.root?.serverError && (
+                <FieldError errors={[errors.root.serverError]} />
+              )}
 
               <Field>
                 <Button type="submit">Войти</Button>
