@@ -1,4 +1,4 @@
-import { SignupForm } from "@/components/signup-form"
+import { SignupForm } from "@/components/ui/auth"
 import { auth } from "@/model/auth";
 import { redirect } from "next/navigation";
 
