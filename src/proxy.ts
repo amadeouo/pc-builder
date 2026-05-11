@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server"
 import { NextRequest } from "next/server"
-
-const PUBLIC_PATHS = new Set(["/", "/login", "/signup"])
-
-function isPublicPath(pathname: string) {
-  if (PUBLIC_PATHS.has(pathname)) return true
-  return pathname.startsWith('/api/');
-}
+import { isPublicPath } from "@/lib/utils";
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
