@@ -1,6 +1,6 @@
 "use client"
 
-import { cn } from "@/lib/utils"
+import { login } from "@/app/login/actions";
 import { Button } from "@/components/shadcn-ui/button"
 import {
   Card,
@@ -11,16 +11,24 @@ import {
 } from "@/components/shadcn-ui/card"
 import {
   Field,
-  FieldDescription, FieldError,
+  FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/shadcn-ui/field"
 import { Input } from "@/components/shadcn-ui/input"
-import Link from "next/link";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { cn } from "@/lib/utils"
+import {
+  LoginSchema,
+  LoginSchemaType
+} from "@/model/zod/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema, LoginSchemaType } from "@/model/zod/auth";
-import { login } from "@/app/login/actions";
+import Link from "next/link";
+import {
+  Controller,
+  SubmitHandler,
+  useForm
+} from "react-hook-form";
 
 export function LoginForm({
   className,
@@ -105,7 +113,8 @@ export function LoginForm({
                 )}
               />
 
-              { errors.root?.serverError && (
+              {errors.root?.serverError
+                && errors.root.serverError.message !== "NEXT_REDIRECT" && (
                 <FieldError errors={[errors.root.serverError]} />
               )}
 
