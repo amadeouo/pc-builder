@@ -2,7 +2,7 @@ import CurrentBuild from "./components/current-build";
 
 export default function Dashboard() {
   return (
-    <div className="container mx-auto max-w-5xl mt-8">
+    <div className="container w-full max-w-5xl mt-8">
       <div className="w-full flex gap-6 lg:flex-row lg:items-start">
         <div className="min-w-0 flex-1">
           <CurrentBuild />

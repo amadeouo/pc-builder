@@ -6,23 +6,35 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/shadcn-ui/dialog";
-import type { Component } from "@/model/types/component";
+import { useComponentsStore } from "@/model/store/useComponentsStore";
 import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { ComponentCard } from "./component-card";
+import { Component } from "@/model/types/component";
 
 type Props = {
   categoryId: string
   categoryName: string
-  onSelect: (component: Component) => void
 }
 
 export function AddComponent({
   categoryName,
   categoryId,
-  onSelect,
 }: Props) {
+
+  const {
+    isLoading,
+    setIsLoading,
+    setOpenCategoryId,
+    onSelectedComponent,
+  } = useComponentsStore(useShallow((s) => ({
+    isLoading: s.isLoading,
+    setIsLoading: s.setIsLoading,
+    setOpenCategoryId: s.setOpenCategoryId,
+    onSelectedComponent: s.onSelectedComponent,
+  })))
+
   const [components, setComponents] = useState<Component[]>([])
-  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     getComponentsByCategory(categoryId)
@@ -32,7 +44,7 @@ export function AddComponent({
           setIsLoading(false)
         }
       )
-  }, [categoryId])
+  }, [categoryId, setComponents, setIsLoading])
 
   return (
     <DialogContent
@@ -52,7 +64,10 @@ export function AddComponent({
                     key={c.id}
                     name={c.name}
                     price={c.price}
-                    onClick={() => onSelect(c)}
+                    onClick={() => {
+                      onSelectedComponent(categoryId, c)
+                      setOpenCategoryId(null)
+                    }}
                   />
                 ))
               }

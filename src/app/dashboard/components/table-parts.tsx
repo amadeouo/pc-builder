@@ -10,24 +10,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/shadcn-ui/table";
-import { type CategoryRow, iconMap } from "@/lib/constants";
-import type { Component } from "@/model/types/component";
+import { componentCategories, iconMap } from "@/lib/constants";
+import { useComponentsStore } from "@/model/store/useComponentsStore";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { AddComponent } from "./add-component";
 
-type Props = {
-  components: CategoryRow[]
-  selectedByCategory: Record<string, Component | null>
-  onSelectedComponent: (categoryId: string, component: Component | null) => void
-}
+export function TableParts() {
+  const {
+    selectedByCategory,
+    openCategoryId,
+    setOpenCategoryId,
+  } = useComponentsStore(useShallow(s => ({
+    selectedByCategory: s.selectedByCategory,
+    openCategoryId: s.openCategoryId,
+    setOpenCategoryId: s.setOpenCategoryId,
+  })))
 
-export function TableParts({
-  components,
-  selectedByCategory,
-  onSelectedComponent,
-}: Props) {
-  const [openCategoryId, setOpenCategoryId] = useState<string | null>(null)
   const totalPrice = Object.values(selectedByCategory)
     .reduce((acc, component) => acc + ( component?.price ?? 0 ), 0)
 
@@ -43,7 +42,7 @@ export function TableParts({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {components.map(category => {
+        {componentCategories.map(category => {
           const Icon = iconMap[category.icon]
           const selected = selectedByCategory[category.id]
 
@@ -74,10 +73,6 @@ export function TableParts({
                   <AddComponent
                     categoryId={category.id}
                     categoryName={category.name}
-                    onSelect={(c) => {
-                      onSelectedComponent(category.id, c)
-                      setOpenCategoryId(null)
-                    }}
                   />
                 </Dialog>
               </TableCell>
