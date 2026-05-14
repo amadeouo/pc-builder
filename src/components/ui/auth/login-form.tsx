@@ -18,17 +18,10 @@ import {
 } from "@/components/shadcn-ui/field"
 import { Input } from "@/components/shadcn-ui/input"
 import { cn } from "@/lib/utils"
-import {
-  LoginSchema,
-  LoginSchemaType
-} from "@/model/zod/auth";
+import { LoginSchema, LoginSchemaType } from "@/model/zod/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import {
-  Controller,
-  SubmitHandler,
-  useForm
-} from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 export function LoginForm({
   className,
@@ -42,6 +35,10 @@ export function LoginForm({
   } = useForm({
     reValidateMode: "onBlur",
     resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   })
 
   const onSubmit: SubmitHandler<LoginSchemaType> = (data) => {
@@ -80,7 +77,7 @@ export function LoginForm({
                       aria-invalid={invalid}
                     />
                     {error && (
-                      <p className="text-red-400">{error.message}</p>
+                      <FieldError errors={[error]} />
                     )}
                   </Field>
                 )}
@@ -107,7 +104,7 @@ export function LoginForm({
                       aria-invalid={invalid}
                     />
                     {error && (
-                      <p className="text-red-400">{error.message}</p>
+                      <FieldError errors={[error]} />
                     )}
                   </Field>
                 )}

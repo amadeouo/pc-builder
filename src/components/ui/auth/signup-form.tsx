@@ -30,6 +30,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   } = useForm({
     reValidateMode: "onBlur",
     resolver: zodResolver(SignupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      repeatPassword: "",
+    }
   })
 
   const onSubmit: SubmitHandler<SignupSchemaType> = (data) => {
