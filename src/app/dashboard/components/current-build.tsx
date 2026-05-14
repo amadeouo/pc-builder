@@ -3,6 +3,7 @@
 import { Button } from "@/components/shadcn-ui/button";
 import { TypographyH1 } from "@/components/typography";
 import { useState } from "react";
+import { SaveBuild } from "./save-build";
 import { TableParts } from "./table-parts";
 
 export default function CurrentBuild() {
@@ -21,6 +22,10 @@ export default function CurrentBuild() {
       <div className="min-w-0 overflow-x-auto">
         <TableParts />
       </div>
+      <SaveBuild
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+      />
     </>
   )
 }

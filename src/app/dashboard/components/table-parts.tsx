@@ -6,6 +6,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -80,6 +81,17 @@ export function TableParts() {
           )
         })}
       </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell colSpan={2}>Общая цена:</TableCell>
+          <TableCell>
+            <p className="text-gray-500">
+              {new Intl.NumberFormat("ru-RU").format(totalPrice)}
+            </p>
+          </TableCell>
+          <TableCell colSpan={2}></TableCell>
+        </TableRow>
+      </TableFooter>
     </Table>
   )
 }
