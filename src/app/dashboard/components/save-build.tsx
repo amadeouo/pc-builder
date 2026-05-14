@@ -21,7 +21,7 @@ import {
 type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  defaultValue?: string
+  defaultValue?: { name: string, components: string }
 }
 
 export function SaveBuild({
@@ -40,7 +40,9 @@ export function SaveBuild({
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm()
+  } = useForm({
+    defaultValues: defaultValue ??  {}
+  })
 
   const handleSave: SubmitHandler<FieldValues> = (data) => {
     console.log(data)
@@ -62,21 +64,19 @@ export function SaveBuild({
             name="name"
             control={control}
             render={({ field, fieldState }) => (
-              <>
                 <Input
                   {...field}
                   placeholder="Например: Игровой ПК"
                   aria-invalid={fieldState.invalid}
-                  defaultValue={defaultValue}
                   required
                 />
-                <input
-                  type="hidden"
-                  {...register("components")}
-                  value={componentsId.join(",")}
-                />
-              </>
             )}
+          />
+
+          <input
+            type="hidden"
+            {...register("components")}
+            value={componentsId.join(",")}
           />
 
           <DialogFooter>

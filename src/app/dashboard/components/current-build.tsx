@@ -25,6 +25,7 @@ export default function CurrentBuild() {
       <SaveBuild
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
+        defaultValue={{name: "field", components: ""}}
       />
     </>
   )
