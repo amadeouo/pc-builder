@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/shadcn-ui/sonner";
 import { Header } from "@/components/ui/header";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -46,6 +47,7 @@ export default function RootLayout({
     <body className="min-h-full items-center flex flex-col">
       <Header />
       {children}
+      <Toaster position="top-center" />
     </body>
     </html>
   );
