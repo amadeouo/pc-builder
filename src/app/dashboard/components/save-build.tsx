@@ -1,5 +1,6 @@
 "use client"
 
+import { type Build, saveBuild } from "@/app/dashboard/actions";
 import { Button } from "@/components/shadcn-ui/button";
 import {
   Dialog,
@@ -9,26 +10,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/shadcn-ui/dialog";
+import { Field, FieldError } from "@/components/shadcn-ui/field";
 import { Input } from "@/components/shadcn-ui/input";
 import { useComponentsStore } from "@/model/store/useComponentsStore";
-import {
-  Controller,
-  type FieldValues,
-  type SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { BuildSchema } from "@/model/zod/build";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  defaultValue?: { name: string, components: string }
+  defaultValue?: Build
+  redirectPath?: string
 }
 
 export function SaveBuild({
   open,
   onOpenChange,
   defaultValue,
+  redirectPath,
 }: Props) {
+  const router = useRouter()
   const selectedBuild = useComponentsStore(state => state.selectedByCategory)
 
   const componentsId = Object.values(selectedBuild)
@@ -37,16 +41,40 @@ export function SaveBuild({
 
   const {
     control,
-    register,
     handleSubmit,
     formState: { isSubmitting },
+    setError,
   } = useForm({
-    defaultValues: defaultValue ??  {}
+    defaultValues: defaultValue ?? {},
+    resolver: zodResolver(BuildSchema),
   })
 
-  const handleSave: SubmitHandler<FieldValues> = (data) => {
-    console.log(data)
-    onOpenChange(false)
+  const handleSave: SubmitHandler<{ name: string }> = async (data) => {
+    if (!componentsId.length) {
+      setError("name", {
+        type: "manual",
+        message: "Добавьте хотя бы один компонент",
+      })
+      return
+    }
+
+    await saveBuild({ ...data, components: componentsId.join(",") })
+      .then(() => {
+        onOpenChange(false)
+        toast.success("Сборка сохранена")
+        if (redirectPath) {
+          router.push(redirectPath)
+        } else {
+          router.refresh()
+        }
+      })
+      .catch(e => {
+        setError("name", {
+          type: "manual",
+          message: e.message,
+        })
+        toast.error("Сборка не сохранена")
+      })
   }
 
   return (
@@ -63,24 +91,28 @@ export function SaveBuild({
           <Controller
             name="name"
             control={control}
-            render={({ field, fieldState }) => (
+            render={({ field, fieldState: { invalid, error } }) => (
+              <Field>
                 <Input
                   {...field}
                   placeholder="Например: Игровой ПК"
-                  aria-invalid={fieldState.invalid}
+                  aria-invalid={invalid}
                   required
                 />
+                {error && (
+                  <FieldError errors={[error]} />
+                )}
+              </Field>
             )}
           />
 
-          <input
-            type="hidden"
-            {...register("components")}
-            value={componentsId.join(",")}
-          />
-
           <DialogFooter>
-            <Button variant="secondary">Отменить</Button>
+            <Button
+              onClick={() => onOpenChange(false)}
+              variant="secondary"
+            >
+              Отменить
+            </Button>
             <Button
               disabled={isSubmitting}
               type="submit"
